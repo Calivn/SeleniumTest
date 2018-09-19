@@ -243,10 +243,10 @@ def createWiki(driver):
 
 
 if __name__ == '__main__':
-    # proName = input("请输入项目名称：")
+    proName = input("请输入项目名称：")
     # projectId = input("输入项目号：")
 
-    proName = "Pepper平板展示"
+    # proName = "Pepper平板展示"
     # projectId = "testid"
 
     tapdUrl = 'https://www.tapd.cn/cloud_logins/login'
