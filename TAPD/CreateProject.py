@@ -12,8 +12,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 def loginTapd(driver, url):
     driver.get(url)
-    driver.find_element_by_xpath('//*[@id="username"]').send_keys('zhucheng@nplusgroup.com')
-    driver.find_element_by_xpath('//*[@id="password_input"]').send_keys('!QAZ2wsx')
+    driver.find_element_by_xpath('//*[@id="username"]').send_keys('1234@1234.com')
+    driver.find_element_by_xpath('//*[@id="password_input"]').send_keys('134567')
     driver.find_element_by_xpath('//*[@id="tcloud_login_button"]').submit()
     print("登陆TAPD成功!")
 
