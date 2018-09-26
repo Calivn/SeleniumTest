@@ -51,8 +51,8 @@ driver = webdriver.Firefox(firefox_profile=fp)  # 此处设置，可以不弹出
 
 driver.get('https://nplus.teamcola.com/login/')
 
-driver.find_element_by_xpath('//*[@id="username"]').send_keys('zhucheng@nplusgroup.com')
-driver.find_element_by_xpath('//*[@id="pw"]').send_keys('Qwer1234')
+driver.find_element_by_xpath('//*[@id="username"]').send_keys('1231@231.com')
+driver.find_element_by_xpath('//*[@id="pw"]').send_keys('213213')
 driver.find_element_by_xpath('//*[@id="btn-login"]').submit()
 
 time.sleep(2)
