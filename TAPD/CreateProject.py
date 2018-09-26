@@ -163,8 +163,7 @@ def enableWiki(driver):
 
 def createWiki(driver):
     print("开始配置“Wiki目录”，请稍等~")
-    wikiTemp = ['//*[@id="wiki_structure_5_a"]', '//*[@id="wiki_structure_4_a"]',
-                '//*[@id="wiki_structure_3_a"]', '//*[@id="wiki_structure_2_a"]', ]
+    wikiTemp = ["【示例】代码规范", "【示例】知识沉淀", "【示例】迭代1回顾", "【示例】迭代回顾"]
     workList = ['1.项目背景', '2.项目需求', '3.UE设计', '4.UI设计', '5.开发文档', '6.测试', '7.项目部署', '版本记录']
     rootXpath = ['//a[@title="3.UE设计"]', '//a[@title="5.开发文档"]',
                  '//a[@title="6.测试"]', '//a[@title="版本记录"]']
@@ -175,21 +174,25 @@ def createWiki(driver):
     sleep(1)
 
     # 删除wiki示例
+    def getSwitchXpath(driver, name):
+        FirstId = driver.find_element_by_xpath('//span[contains(text(), "%s")]' % name).get_attribute('id')
+        switchXpath = FirstId[:-4] + 'switch'
+        driver.find_element_by_xpath('//*[@id="%s"]' % switchXpath).click()
+
     try:
-        driver.find_element_by_xpath('//*[@id="wiki_structure_1_switch"]').click()
+        getSwitchXpath(driver, "首页")
         sleep(1)
         for x in wikiTemp:
-            if x == '//*[@id="wiki_structure_5_a"]':
-                drivers.find_element_by_xpath('//*[@id="wiki_structure_4_switch"]').click()
-            elif x == '//*[@id="wiki_structure_3_a"]':
-                drivers.find_element_by_xpath('//*[@id="wiki_structure_2_switch"]').click()
+            if x == "【示例】代码规范":
+                getSwitchXpath(driver, "【示例】知识沉淀")
+            elif x == "【示例】迭代1回顾":
+                getSwitchXpath(driver, "【示例】迭代回顾")
             sleep(2)
-            buildfolder = driver.find_element_by_xpath(x)
-            ActionChains(driver).move_to_element(buildfolder).perform()
-            buildfolder.find_element_by_class_name('dropdown-toggle').click()
+            driver.find_element_by_xpath('//span[contains(text(), "%s")]' % x).click()
             sleep(1)
+            driver.find_element_by_xpath('//span[contains(@onclick, "%s")]' % x).click()
+            sleep(2)
             driver.find_element_by_xpath('//*[@id="diy_pop"]/ul/li[4]/span').click()
-            # abc = driver.find_element_by_xpath('/html/body/div[8]')
             sleep(2)
             drivers.find_element_by_xpath('/html/body/div[8]/div[3]/div/a[1]').click()
     except:
@@ -198,15 +201,15 @@ def createWiki(driver):
     # 创建新的wiki目录
     for i in workList:
         sleep(2)
-        driver.find_element_by_xpath('//*[@id="wiki_structure_1_span"]').click()
-        driver.find_element_by_xpath('//*[@id="diyBtn_wiki_structure_1"]/span').click()
+        driver.find_element_by_xpath('//span[contains(text(), "首页")]').click()
+        driver.find_element_by_xpath('//span[contains(@onclick,"首页")]').click()
+        sleep(1)
         try:
             sleep(1)
-            driver.find_element_by_xpath('//*[@id="diy_pop"]/ul/li[1]/span').click()
+            driver.find_element_by_xpath('//*[@id="diy_pop"]/ul/li[1]').click()
         except:
-            sleep(2)
-            driver.find_element_by_xpath('//*[@id="diy_pop"]/ul/li[1]/span').click()
-        sleep(2)
+            sleep(1)
+            driver.find_element_by_xpath('//*[@id="diy_pop"]/ul/li[1]').click()
         driver.find_element_by_xpath('//*[@id="WikiName"]').send_keys(i)
         driver.find_element_by_xpath('//*[@id="wiki_div_submit"]').submit()
 
@@ -219,10 +222,10 @@ def createWiki(driver):
             folder.find_element_by_class_name('dropdown-toggle').click()
             try:
                 sleep(1)
-                driver.find_element_by_xpath('//*[@id="diy_pop"]/ul/li[1]/span').click()
+                driver.find_element_by_xpath('//span[contains(text(), "添加wiki页面")]').click()
             except:
                 sleep(2)
-                driver.find_element_by_xpath('//*[@id="diy_pop"]/ul/li[1]/span').click()
+                driver.find_element_by_xpath('//span[contains(text(), "添加wiki页面")]').click()
             sleep(2)
             driver.find_element_by_xpath('//*[@id="WikiName"]').send_keys(a)
             driver.find_element_by_xpath('//*[@id="wiki_div_submit"]').submit()
