@@ -12,8 +12,8 @@ time.sleep(5)
 
 drive.switch_to.frame('x-URS-iframe')  # 切换frame
 
-drive.find_element_by_xpath('//*[@name="email"]').send_keys('zhucheng139122')
-drive.find_element_by_xpath('//*[@name="password"]').send_keys('qazs~19890518')
+drive.find_element_by_xpath('//*[@name="email"]').send_keys('123123')
+drive.find_element_by_xpath('//*[@name="password"]').send_keys('12321321')
 drive.find_element_by_xpath('//*[@id="dologin"]').click()
 time.sleep(3)
 drive.find_element_by_link_text(u"登录").click()
