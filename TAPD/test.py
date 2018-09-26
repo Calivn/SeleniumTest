@@ -48,8 +48,8 @@ tapdUrl = 'https://www.tapd.cn/cloud_logins/login'
 driver = webdriver.Chrome()
 
 driver.get(tapdUrl)
-driver.find_element_by_xpath('//*[@id="username"]').send_keys('zhucheng@nplusgroup.com')
-driver.find_element_by_xpath('//*[@id="password_input"]').send_keys('!QAZ2wsx')
+driver.find_element_by_xpath('//*[@id="username"]').send_keys('3123123@123.com')
+driver.find_element_by_xpath('//*[@id="password_input"]').send_keys('12321312')
 driver.find_element_by_xpath('//*[@id="tcloud_login_button"]').submit()
 print("登陆成功")
 
