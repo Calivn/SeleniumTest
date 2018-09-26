@@ -22,7 +22,7 @@ time.sleep(3)
 
 drive.find_element_by_xpath('//*[@id="_mail_component_68_68"]').click()
 time.sleep(2)
-drive.find_element_by_class_name('nui-editableAddr-ipt').send_keys('zhucheng@nplusgroup.com')
+drive.find_element_by_class_name('nui-editableAddr-ipt').send_keys('213213@123213.com')
 drive.find_element_by_xpath('//*[@class="nui-ipt-input" and @tabindex="1"]').send_keys('abcdefg')   # 双重标签定位
 drive.find_element_by_xpath('/html/body/div[2]/div[1]/div[2]/header/div/div[1]/div/span[2]').click()
 
