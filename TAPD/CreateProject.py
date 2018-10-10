@@ -245,6 +245,59 @@ def createWiki(driver):
     sleep(2)
 
 
+def clearTemp(driver):
+    """删除项目模板"""
+
+    """清理需求模板"""
+    print("开始清理模板需求~")
+    driver.find_element_by_xpath('//a[@title="需求"]').click()
+    sleep(2)
+    requestXpath = driver.find_element_by_xpath('//a[contains(text(), "【示例】父需求")]')
+    requestId = requestXpath.get_attribute('id')
+    ActionChains(driver).move_to_element(requestXpath).perform()    # 悬停
+    driver.find_element_by_xpath('//*[@id="tr_%s:"]/td[2]/div/div/div/a' % requestId).click()   # 根据id动态定位
+    driver.find_element_by_xpath('//*[@id="%s-delete_story"]/a' % requestId[6:]).click()
+    driver.find_element_by_xpath('/html/body/div[11]/div[3]/div/a[1]').click()
+    print("模板需求已成功删除！")
+
+    """清理迭代模板"""
+    print("开始清理模板迭代~")
+    homeWindows = driver.current_window_handle
+    driver.find_element_by_xpath('//a[contains(text(), "迭代")]').click()
+    sleep(1)
+    driver.find_element_by_xpath('//a[contains(text(), "【示例】父需求")]').click()
+    sleep(1)
+    allWindows = driver.window_handles
+    for handle in allWindows:
+        if handle != homeWindows:
+            driver.switch_to.window(handle)
+            sleep(1)
+            # 删除迭代模板
+            driver.find_element_by_xpath('//*[@id="locate_more_operations "]/a/span').click()
+            driver.find_element_by_xpath('//*[@id="delete_story"]').click()
+            driver.find_element_by_xpath('/html/body/div[7]/div[3]/div/a[1]/span').click()
+            sleep(1)
+            driver.close()
+    driver.switch_to.window(homeWindows)
+    print("模板迭代已成功删除！")
+
+    """清理BUG模板"""
+    print("开始清理模板BUG~")
+    driver.find_element_by_xpath('//a[@title="缺陷"]').click()
+    for i in [2, 1]:
+        bugName = "【示例】缺陷" + str(i)
+        bugXpath = driver.find_element_by_xpath('//a[contains(text(), "%s")]' % bugName)
+        ActionChains(driver).move_to_element(bugXpath).perform()
+        sleep(1)
+        driver.find_element_by_xpath(
+            '//*[@id="bug_list_content"]/tbody/tr[%d]/td[2]/div/div[1]/div/a' % (i + 1)).click()
+        sleep(1)
+        driver.find_element_by_xpath(
+            '//*[@id="bug_list_content"]/tbody/tr[%d]/td[2]/div/div[1]/div/div/ul/li[3]/a/i' % (i + 1)).click()
+        driver.find_element_by_xpath('/html/body/div[7]/div[3]/div/a[1]').click()
+    print("模板BUG已成功删除！")
+
+
 if __name__ == '__main__':
     proName = input("请输入项目名称：")
     # projectId = input("输入项目号：")
@@ -268,6 +321,9 @@ if __name__ == '__main__':
     createProject(drivers, proName)
     sleep(12)
     openProject(drivers, proName)
+
+    # 删除项目模板
+    clearTemp(drivers)
 
     # 创建BUG报告
     createReport(drivers)
