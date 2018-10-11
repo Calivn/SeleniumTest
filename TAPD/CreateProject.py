@@ -10,10 +10,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-def loginTapd(driver, url):
-    driver.get(url)
-    driver.find_element_by_xpath('//*[@id="username"]').send_keys('1234@1234.com')
-    driver.find_element_by_xpath('//*[@id="password_input"]').send_keys('134567')
+def loginTapd(driver, user, passwd):
+    driver.get("https://www.tapd.cn/cloud_logins/login")
+    driver.find_element_by_xpath('//*[@id="username"]').send_keys(user)
+    driver.find_element_by_xpath('//*[@id="password_input"]').send_keys(passwd)
     driver.find_element_by_xpath('//*[@id="tcloud_login_button"]').submit()
     print("登陆TAPD成功!")
 
@@ -21,16 +21,33 @@ def loginTapd(driver, url):
 def createProject(driver, proName):
     # 打开项目列表主页
     driver.find_element_by_xpath('//*[@id="tree-wrapper"]/div[1]/a').click()
-    # sleep(2)
-    # 点击创建项目
-    driver.find_element_by_xpath('//*[@class="create-project"]').click()
-    # 显式等待弹框打开
-    WebDriverWait(driver, 10).until(
-        EC.text_to_be_present_in_element((By.XPATH, '//*[@id="workspace-template-list"]/li[3]/div[1]'), '轻量敏捷项目管理'))
-    driver.find_element_by_xpath('/html/body/div[5]').find_element_by_xpath('//*[@id="name"]').send_keys("%s" % proName)
-    driver.find_element_by_xpath('//*[@id="tdialog-buttonwrap"]/a[1]').click()
-    print("\n%s 项目创建成功！\n" % proName)
-    print("\n请稍等，即将进入项目配置环节！请稍等！\n")
+    try:
+        driver.find_element_by_xpath('//a[contains(text(), "%s")]' % proName)
+        print("项目已存在,即将退出~~")
+        sleep(3)
+        driver.quit()
+        _exit(0)
+    except:
+        # 点击创建项目
+        try:
+            driver.find_element_by_xpath('//*[@class="create-project"]').click()
+            # 显式等待弹框打开
+            WebDriverWait(driver, 10).until(
+                EC.text_to_be_present_in_element((By.XPATH, '//*[@id="workspace-template-list"]/li[3]/div[1]'),
+                                                 '轻量敏捷项目管理'))
+            driver.find_element_by_xpath('/html/body/div[5]').find_element_by_xpath('//*[@id="name"]').send_keys(
+                "%s" % proName)
+            driver.find_element_by_xpath('//*[@id="tdialog-buttonwrap"]/a[1]').click()
+            sleep(12)
+            print("\n%s 项目创建成功！\n" % proName)
+            sleep(1)
+            driver.find_element_by_xpath('//*[@id="tdialog"]/div/div[1]/div[1]/i').click()
+            sleep(3)
+            drivers.find_element_by_xpath('/html/body/div[12]/div[2]/div[1]').click()
+            sleep(1)
+        except:
+            print("请确认该账户是否具备项目创建权限！")
+            drivers.quit()
 
 
 def openProject(driver, projectName):
@@ -142,23 +159,27 @@ def copyFlow(driver, newProject, oldProject):
 def enableWiki(driver):
     print("\n正在启用Wiki~\n")
     try:
-        more = driver.find_element_by_xpath('//*[@id="dropdown-nav-more"]/a/span')
-        ActionChains(driver).move_to_element(more).perform()
-        sleep(1)
-        driver.find_element_by_xpath('//*[@id="dropdown-nav-more"]/div/ul/li[3]/a').click()
+        driver.find_element_by_xpath('//a[contains(text(), "Wiki")]')
+        print("\nWiki已成功启用~\n")
     except:
-        driver.find_element_by_xpath('//*[@id="hd"]/div[5]/div[2]/a/i').click()
+        try:
+            more = driver.find_element_by_xpath('//*[@id="dropdown-nav-more"]/a/span')
+            ActionChains(driver).move_to_element(more).perform()
+            sleep(1)
+            driver.find_element_by_xpath('//*[@id="dropdown-nav-more"]/div/ul/li[3]/a').click()
+        except:
+            driver.find_element_by_xpath('//*[@id="hd"]/div[5]/div[2]/a/i').click()
 
-    driver.find_element_by_xpath('//a[contains(text(), "应用设置")]').click()
-    driver.find_element_by_xpath('//*[@id="page-content"]/div/div/div[1]/div/div[2]/a').click()
+        driver.find_element_by_xpath('//a[contains(text(), "应用设置")]').click()
+        driver.find_element_by_xpath('//*[@id="page-content"]/div/div/div[1]/div/div[2]/a').click()
 
-    start = driver.find_element_by_xpath('//span[contains(text(), "Wiki")]')
-    end = driver.find_element_by_xpath('//span[contains(text(), "需求")]')
-    actions = ActionChains(driver)
-    actions.drag_and_drop(start, end).perform()
-    sleep(2)
-    driver.find_element_by_xpath('//*[@id="config-menu-submit-span"]').click()
-    print("\nWiki已成功启用~\n")
+        start = driver.find_element_by_xpath('//span[contains(text(), "Wiki")]')
+        end = driver.find_element_by_xpath('//span[contains(text(), "需求")]')
+        actions = ActionChains(driver)
+        actions.drag_and_drop(start, end).perform()
+        sleep(2)
+        driver.find_element_by_xpath('//*[@id="config-menu-submit-span"]').click()
+        print("\nWiki已成功启用~\n")
 
 
 def createWiki(driver):
@@ -169,7 +190,7 @@ def createWiki(driver):
                  '//a[@title="6.测试"]', '//a[@title="版本记录"]']
     sonList = [['需求文档链接汇总'], ['5.1前端文档', '5.2后端文档', '5.3代码路径'], ['6.0 测试环境', '6.1测试用例', '6.2测试计划'], ['【V0.0.1】版本内容']]
 
-    # 进入文档
+    # 进入wiki
     driver.find_element_by_xpath('//a[contains(text(), "Wiki")]').click()
     sleep(1)
 
@@ -210,6 +231,9 @@ def createWiki(driver):
         except:
             sleep(1)
             driver.find_element_by_xpath('//*[@id="diy_pop"]/ul/li[1]').click()
+        while not driver.find_element_by_xpath('//*[@id="wiki_div_submit"]').is_enabled():
+            driver.refresh()
+            sleep(2)
         driver.find_element_by_xpath('//*[@id="WikiName"]').send_keys(i)
         driver.find_element_by_xpath('//*[@id="wiki_div_submit"]').submit()
 
@@ -227,17 +251,26 @@ def createWiki(driver):
                 sleep(2)
                 driver.find_element_by_xpath('//span[contains(text(), "添加wiki页面")]').click()
             sleep(2)
+            while not driver.find_element_by_xpath('//*[@id="wiki_div_submit"]').is_enabled():
+                driver.refresh()
+                sleep(2)
             driver.find_element_by_xpath('//*[@id="WikiName"]').send_keys(a)
             driver.find_element_by_xpath('//*[@id="wiki_div_submit"]').submit()
 
     sleep(2)
     try:
         driver.find_element_by_xpath('//*[@id="page-content"]/div[1]/div/a/span').click()
+        while not driver.find_element_by_xpath('//*[@id="wiki_div_submit"]').is_enabled():
+            driver.refresh()
+            sleep(2)
         driver.find_element_by_xpath('//*[@id="WikiName"]').send_keys('老版本文档链接汇总')
         driver.find_element_by_xpath('//*[@id="wiki_div_submit"]').submit()
     except:
         sleep(3)
         driver.find_element_by_xpath('//*[@id="page-content"]/div[1]/div/a/span').click()
+        while not driver.find_element_by_xpath('//*[@id="wiki_div_submit"]').is_enabled():
+            driver.refresh()
+            sleep(2)
         driver.find_element_by_xpath('//*[@id="WikiName"]').send_keys('老版本文档链接汇总')
         driver.find_element_by_xpath('//*[@id="wiki_div_submit"]').submit()
 
@@ -250,63 +283,73 @@ def clearTemp(driver):
 
     """清理需求模板"""
     print("开始清理模板需求~")
-    driver.find_element_by_xpath('//a[@title="需求"]').click()
-    sleep(2)
-    requestXpath = driver.find_element_by_xpath('//a[contains(text(), "【示例】父需求")]')
-    requestId = requestXpath.get_attribute('id')
-    ActionChains(driver).move_to_element(requestXpath).perform()    # 悬停
-    driver.find_element_by_xpath('//*[@id="tr_%s:"]/td[2]/div/div/div/a' % requestId).click()   # 根据id动态定位
-    driver.find_element_by_xpath('//*[@id="%s-delete_story"]/a' % requestId[6:]).click()
-    driver.find_element_by_xpath('/html/body/div[11]/div[3]/div/a[1]').click()
-    print("模板需求已成功删除！")
+    try:
+        driver.find_element_by_xpath('//a[@title="需求"]').click()
+        sleep(2)
+        requestXpath = driver.find_element_by_xpath('//a[contains(text(), "【示例】父需求")]')
+        requestId = requestXpath.get_attribute('id')
+        ActionChains(driver).move_to_element(requestXpath).perform()  # 悬停
+        driver.find_element_by_xpath('//*[@id="tr_%s:"]/td[2]/div/div/div/a' % requestId).click()  # 根据id动态定位
+        driver.find_element_by_xpath('//*[@id="%s-delete_story"]/a' % requestId[6:]).click()
+        driver.find_element_by_xpath('/html/body/div[11]/div[3]/div/a[1]').click()
+        print("模板需求已成功删除！")
+    except:
+        print("模板需求已清除~")
 
     """清理迭代模板"""
     print("开始清理模板迭代~")
-    homeWindows = driver.current_window_handle
-    driver.find_element_by_xpath('//a[contains(text(), "迭代")]').click()
-    sleep(1)
-    driver.find_element_by_xpath('//a[contains(text(), "【示例】父需求")]').click()
-    sleep(1)
-    allWindows = driver.window_handles
-    for handle in allWindows:
-        if handle != homeWindows:
-            driver.switch_to.window(handle)
-            sleep(1)
-            # 删除迭代模板
-            driver.find_element_by_xpath('//*[@id="locate_more_operations "]/a/span').click()
-            driver.find_element_by_xpath('//*[@id="delete_story"]').click()
-            driver.find_element_by_xpath('/html/body/div[7]/div[3]/div/a[1]/span').click()
-            sleep(1)
-            driver.close()
-    driver.switch_to.window(homeWindows)
-    print("模板迭代已成功删除！")
+    try:
+        homeWindows = driver.current_window_handle
+        driver.find_element_by_xpath('//a[contains(text(), "迭代")]').click()
+        sleep(1)
+        driver.find_element_by_xpath('//a[contains(text(), "【示例】父需求")]').click()
+        sleep(1)
+        allWindows = driver.window_handles
+        for handle in allWindows:
+            if handle != homeWindows:
+                driver.switch_to.window(handle)
+                sleep(1)
+                # 删除迭代模板
+                driver.find_element_by_xpath('//*[@id="locate_more_operations "]/a/span').click()
+                driver.find_element_by_xpath('//*[@id="delete_story"]').click()
+                driver.find_element_by_xpath('/html/body/div[7]/div[3]/div/a[1]/span').click()
+                sleep(1)
+                driver.close()
+        driver.switch_to.window(homeWindows)
+        print("模板迭代已成功删除！")
+    except:
+        print("模板迭代已清除~")
 
     """清理BUG模板"""
     print("开始清理模板BUG~")
-    driver.find_element_by_xpath('//a[@title="缺陷"]').click()
-    for i in [2, 1]:
-        bugName = "【示例】缺陷" + str(i)
-        bugXpath = driver.find_element_by_xpath('//a[contains(text(), "%s")]' % bugName)
-        ActionChains(driver).move_to_element(bugXpath).perform()
-        sleep(1)
-        driver.find_element_by_xpath(
-            '//*[@id="bug_list_content"]/tbody/tr[%d]/td[2]/div/div[1]/div/a' % (i + 1)).click()
-        sleep(1)
-        driver.find_element_by_xpath(
-            '//*[@id="bug_list_content"]/tbody/tr[%d]/td[2]/div/div[1]/div/div/ul/li[3]/a/i' % (i + 1)).click()
-        driver.find_element_by_xpath('/html/body/div[7]/div[3]/div/a[1]').click()
-    print("模板BUG已成功删除！")
+    try:
+        driver.find_element_by_xpath('//a[@title="缺陷"]').click()
+        for i in [2, 1]:
+            bugName = "【示例】缺陷" + str(i)
+            bugXpath = driver.find_element_by_xpath('//a[contains(text(), "%s")]' % bugName)
+            ActionChains(driver).move_to_element(bugXpath).perform()
+            sleep(1)
+            driver.find_element_by_xpath(
+                '//*[@id="bug_list_content"]/tbody/tr[%d]/td[2]/div/div[1]/div/a' % (i + 1)).click()
+            sleep(1)
+            driver.find_element_by_xpath(
+                '//*[@id="bug_list_content"]/tbody/tr[%d]/td[2]/div/div[1]/div/div/ul/li[3]/a/i' % (i + 1)).click()
+            driver.find_element_by_xpath('/html/body/div[7]/div[3]/div/a[1]').click()
+        print("模板BUG已成功删除！")
+    except:
+        print("模板BUG已清除~")
 
 
 if __name__ == '__main__':
-    proName = input("请输入项目名称：")
-    # projectId = input("输入项目号：")
-
-    # proName = "Pepper平板展示"
-    # projectId = "testid"
-
-    tapdUrl = 'https://www.tapd.cn/cloud_logins/login'
-
+    username = input("请输入你的TAPD账户：\n(即企业邮箱，请务必确保该账户有项目创建权限)\n")
+    password = input("\n请输入你的账户密码：")
+    proName = input("\n请输入项目名称：\n（项目名称请输入中英文、下划线、空格、英文句号和数字，且只能以中英文开头，不超过30字符）\n")
+    # tapdUrl = 'https://www.tapd.cn/cloud_logins/login'
+    print('''
+1、完整创建项目                2、仅创建Wiki目录
+3、仅同步需求&缺陷工作流       4、仅清除项目模板
+            ''')
+    select = str(input())
     # 显式调用浏览器
     drivers = webdriver.Chrome()
 
@@ -315,32 +358,55 @@ if __name__ == '__main__':
     # option.add_argument("headless")
     # drivers = webdriver.Chrome(chrome_options=option)
 
-    loginTapd(drivers, tapdUrl)
+    tag = True
+    while tag:
+        if select == '1':
+            loginTapd(drivers, username, password)
 
-    # 创建项目
-    createProject(drivers, proName)
-    sleep(12)
-    openProject(drivers, proName)
+            # 创建项目
+            createProject(drivers, proName)
+            openProject(drivers, proName)
 
-    # 删除项目模板
-    clearTemp(drivers)
+            # 删除项目模板
+            clearTemp(drivers)
 
-    # 创建BUG报告
-    createReport(drivers)
+            # 创建BUG报告
+            createReport(drivers)
+            oldProject = '模板项目'
 
-    # createFolder(drivers, projectId)
-    # oldProject = input("\n您想从哪个项目复制需求&BUG的工作流程：\n")
-    oldProject = '模板项目'
+            # 复制项目需求&BUG工作流
+            copyFlow(drivers, proName, oldProject)
 
-    # 复制项目需求&BUG工作流
-    copyFlow(drivers, proName, oldProject)
+            openProject(drivers, proName)
 
-    openProject(drivers, proName)
+            # 配置Wiki
+            enableWiki(drivers)
+            createWiki(drivers)
+            tag = False
+        elif select == '2':
+            loginTapd(drivers, username, password)
+            openProject(drivers, proName)
 
-    # 配置Wiki
-    enableWiki(drivers)
-    createWiki(drivers)
+            # 配置Wiki
+            enableWiki(drivers)
+            createWiki(drivers)
+            tag = False
+        elif select == '3':
+            loginTapd(drivers, username, password)
+            openProject(drivers, proName)
+            oldProject = '模板项目'
+            copyFlow(drivers, proName, oldProject)
+            tag = False
+        elif select == '4':
+            loginTapd(drivers, username, password)
+            openProject(drivers, proName)
 
-    print("Program will now quit~")
+            # 删除项目模板
+            clearTemp(drivers)
+            tag = False
+        else:
+            print("请重新选择！")
+
+    print("已完成，即将关闭程序~")
     sleep(3)
     drivers.quit()
