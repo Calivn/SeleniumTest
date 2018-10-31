@@ -10,7 +10,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-def loginTapd(driver, user, passwd):
+def login_tapd(driver, user, passwd):
     driver.get("https://www.tapd.cn/cloud_logins/login")
     driver.find_element_by_xpath('//*[@id="username"]').send_keys(user)
     driver.find_element_by_xpath('//*[@id="password_input"]').send_keys(passwd)
@@ -361,7 +361,7 @@ if __name__ == '__main__':
     tag = True
     while tag:
         if select == '1':
-            loginTapd(drivers, username, password)
+            login_tapd(drivers, username, password)
 
             # 创建项目
             createProject(drivers, proName)
@@ -384,7 +384,7 @@ if __name__ == '__main__':
             createWiki(drivers)
             tag = False
         elif select == '2':
-            loginTapd(drivers, username, password)
+            login_tapd(drivers, username, password)
             openProject(drivers, proName)
 
             # 配置Wiki
@@ -392,13 +392,13 @@ if __name__ == '__main__':
             createWiki(drivers)
             tag = False
         elif select == '3':
-            loginTapd(drivers, username, password)
+            login_tapd(drivers, username, password)
             openProject(drivers, proName)
             oldProject = '模板项目'
             copyFlow(drivers, proName, oldProject)
             tag = False
         elif select == '4':
-            loginTapd(drivers, username, password)
+            login_tapd(drivers, username, password)
             openProject(drivers, proName)
 
             # 删除项目模板
